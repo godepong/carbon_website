@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Carbon Footprint Calculator - การเดินทาง</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: 'Sarabun', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: #f4f7f6;
+            color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            background: #ffffff;
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+            max-width: 500px;
+            width: 100%;
+        }
+
+        h1 {
+            color: #2e7d32;
+            font-size: 24px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #444;
+        }
+
+        select, input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            font-size: 16px;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        select:focus, input:focus {
+            border-color: #2e7d32;
+        }
+
+        button {
+            width: 100%;
+            padding: 14px;
+            background-color: #2e7d32;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            margin-top: 10px;
+        }
+
+        button:hover {
+            background-color: #1b5e20;
+        }
+
+        .result-box {
+            margin-top: 25px;
+            padding: 20px;
+            background-color: #e8f5e9;
+            border-left: 5px solid #2e7d32;
+            border-radius: 8px;
+            display: none;
+        }
+
+        .result-title {
+            font-size: 16px;
+            color: #555;
+        }
+
+        .result-value {
+            font-size: 28px;
+            font-weight: bold;
+            color: #2e7d32;
+            margin: 5px 0 15px 0;
+        }
+
+        .fun-fact {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px stroke #c8e6c9;
+            font-size: 14px;
+            color: #333;
+            line-height: 1.5;
+        }
+
+        .fun-fact span {
+            font-weight: bold;
+            color: #1b5e20;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>🌱 คำนวณ Carbon Footprint การเดินทาง</h1>
+    
+    <div class="form-group">
+        <label for="vehicle">ประเภทพาหนะ:</label>
+        <select id="vehicle">
+            <option value="0.165">รถยนต์ส่วนตัว (เบนซิน/ดีเซล)</option>
+            <option value="0.050">รถยนต์ไฟฟ้า (EV)</option>
+            <option value="0.080">รถตู้ / รถเมล์ / แท็กซี่</option>
+            <option value="0.035">รถไฟ / รถไฟฟ้า</option>
+            <option value="0.255">เครื่องบิน</option>
+            <option value="0.000">เดิน / จักรยาน</option>
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label for="distance">ระยะทาง (กิโลเมตร / เที่ยว):</label>
+        <input type="number" id="distance" placeholder="เช่น 25" min="0" step="any">
+    </div>
+
+    <div class="form-group">
+        <label for="trips">จำนวนเที่ยวต่อสัปดาห์ (ไป-กลับ = 2 เที่ยว):</label>
+        <input type="number" id="trips" placeholder="เช่น 10" min="0" step="1" value="10">
+    </div>
+
+    <button onclick="calculateCarbon()">คำนวณปริมาณคาร์บอน</button>
+
+    <div id="resultBox" class="result-box">
+        <div class="result-title">ปริมาณการปล่อยก๊าซเรือนกระจกของคุณ:</div>
+        <div class="result-value" id="carbonValue">0 kgCO2e / ปี</div>
+        
+        <div class="fun-fact" id="funFactText">
+            <!-- Fun Fact จะถูกแทรกที่นี่ด้วย JS -->
+        </div>
+    </div>
+</div>
+
+<script>
+    function calculateCarbon() {
+        const ef = parseFloat(document.getElementById('vehicle').value);
+        const distance = parseFloat(document.getElementById('distance').value);
+        const trips = parseFloat(document.getElementById('trips').value);
+
+        if (isNaN(distance) || isNaN(trips) || distance < 0 || trips < 0) {
+            alert('กรุณากรอกข้อมูลระยะทางและจำนวนเที่ยวให้ถูกต้อง');
+            return;
+        }
+
+        // คำนวณต่อปี (คิดสัปดาห์เรียน/ทำงานเฉลี่ย 40 สัปดาห์)
+        const annualKm = distance * trips * 40;
+        const annualCarbon = annualKm * ef;
+
+        // สลับแสดงผล Fun Facts แบบสุ่ม
+        const funFacts = [
+            `💡 <b>Fun Fact:</b> ต้นไม้ 1 ต้น สามารถดูดซับ CO2 ได้ประมาณ <b>9-15 kg ต่อปี</b> ปริมาณคาร์บอนจากการเดินทางของคุณปีนี้ ต้องปลูกต้นไม้ประมาณ <b>${Math.ceil(annualCarbon / 10)} ต้น</b> ถึงจะช่วยชดเชยได้พอดี!`,
+            `💡 <b>Fun Fact:</b> รู้ไหมว่าการเปลี่ยนจากการใช้รถยนต์ส่วนตัวมานั่ง <b>รถไฟ/รถไฟฟ้า</b> สามารถลดการปล่อยคาร์บอนได้มากถึง <b>75-80%</b> ในระยะทางที่เท่ากัน!`,
+            `💡 <b>Fun Fact:</b> หากคุณเดินหรือปั่นจักรยานแทนการขับรถในระยะทางสั้นๆ 5 กม. ทุกวัน ใน 1 ปี คุณจะช่วยลด CO2 ได้มากกว่า <b>300 kg</b> หรือเท่ากับชาร์จสมาร์ตโฟนได้กว่า 36,000 ครั้ง!`,
+            `💡 <b>Fun Fact:</b> เครื่องบินปล่อยคาร์บอนสูงที่สุดต่อกิโลเมตร โดยการบินเที่ยวบินสั้นๆ 1 ครั้ง อาจปล่อย CO2 เทียบเท่ากับการขับรถยนต์ส่วนตัวติดต่อกันนานหลายวัน`
+        ];
+
+        const randomFact = funFacts[Math.floor(Math.random() * funFacts.length)];
+
+        // แสดงผลลัพธ์
+        document.getElementById('carbonValue').innerText = `${annualCarbon.toLocaleString('th-TH', {maximumFractionDigits: 2})} kgCO2e / ปี`;
+        document.getElementById('funFactText').innerHTML = randomFact;
+        document.getElementById('resultBox').style.display = 'block';
+    }
+</script>
+
+</body>
+</html>
